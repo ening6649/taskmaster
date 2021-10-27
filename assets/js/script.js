@@ -304,3 +304,16 @@ $(".list-group").on("click", "span", function() {
   // automatically bring up the calendar
   dateInput.trigger("focus");
 });
+
+// add two days to the current time with moments
+var twoDaysFromNow = moment().add(2, "days");
+
+// add two days in js
+// get current date
+var currentDate = new Date();
+
+// set how many days from now we want
+var daysFromNow = 2;
+
+// get date two days from now
+var twoDaysFromNow = new Date(currentDate.setDate(currentDate.getDate() + daysFromNow));
