@@ -317,3 +317,80 @@ var daysFromNow = 2;
 
 // get date two days from now
 var twoDaysFromNow = new Date(currentDate.setDate(currentDate.getDate() + daysFromNow));
+
+// create color coded warning , due soon and overdue 
+//  first , need to use jquery to retrieve the date stored in span element 
+// second, use momment function to cover that date value into a moment object
+var auditTask = function(taskEl) {
+  // get date from task element
+  var date = $(taskEl).find("span").text().trim();
+  // ensure it worked
+  console.log(date); 
+
+  // convert to moment object at 5:00pm
+  // configured for the user's local time
+  // moment object will default to 12am +17 hours to covert to 5 pm
+  // so we can compare when a task is due 
+  var time = moment(date, "L").set("hour", 17);
+  // this should print out an object for the value of the date variable, but at 5:00pm of that date
+  console.log(time);
+
+};
+
+var createTask = function(taskText, taskDate, taskList) {
+  // create elements that make up a task item
+  var taskLi = $("<li>").addClass("list-group-item");
+
+  var taskSpan = $("<span>").addClass("badge badge-primary badge-pill").text(taskDate);
+
+  var taskP = $("<p>").addClass("m-1").text(taskText);
+
+  // append span and p element to parent li
+  taskLi.append(taskSpan, taskP);
+
+  // check due date
+  auditTask(taskLi);
+
+  // append to ul list on the page
+  $("#list-" + taskList).append(taskLi);
+};
+
+// check if a date is in the past or imminent
+var auditTask = function(taskEl) {
+  // get date from task element
+  var date = $(taskEl).find("span").text().trim();
+
+  // convert to moment object at 5:00pm
+  var time = moment(date, "L").set("hour", 17);
+
+  // remove any old classes from element
+  $(taskEl).removeClass("list-group-item-warning list-group-item-danger");
+
+  // apply new class if task is near/over due date
+  if (moment().isAfter(time)) {
+    $(taskEl).addClass("list-group-item-danger");
+  }
+  // check if a date if imminent 
+  // moment will return a negative number today =0 - 2 days from now = -2
+  // math.abs makes the number an absolute value 
+  else if (Math.abs(moment().diff(time, "days")) <= 2) {
+    $(taskEl).addClass("list-group-item-warning");
+  }
+};
+
+// update due date change event handler function. add one more line of code to the very bottom
+$(".list-group").on("change", "input[type='text']", function() {
+  var date = $(this).val();
+
+  var status = $(this).closest(".list-group").attr("id").replace("list-", "");
+  var index = $(this).closest(".list-group-item").index();
+
+  tasks[status][index].date = date;
+  saveTasks();
+
+  var taskSpan = $("<span>").addClass("badge badge-primary badge-pill").text(date);
+  $(this).replaceWith(taskSpan);
+
+  // Pass task's <li> element into auditTask() to check new due date
+  auditTask($(taskSpan).closest(".list-group-item"));
+});
