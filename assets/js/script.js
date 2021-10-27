@@ -274,3 +274,33 @@ $("#trash").droppable({
     console.log("out");
   }
 });
+
+// date picker 
+$("#modalDueDate").datepicker({
+  // set the min. date to be one day from the current date. 
+  minDate: 1,
+  // close when an user clicks anywhere on the page outside the date picker 
+  onClose: function() {
+    // when calendar is closed, force a "change" event on the `dateInput`
+    $(this).trigger("change");
+  }
+});
+
+// create date picker every time an user clicks on the dute date for a task
+$(".list-group").on("click", "span", function() {
+  // get current text
+  var date = $(this).text().trim();
+
+  // create new input element
+  var dateInput = $("<input>").attr("type", "text").addClass("form-control").val(date);
+
+  $(this).replaceWith(dateInput);
+
+  // enable jquery ui datepicker
+  dateInput.datepicker({
+    minDate: 1
+  });
+
+  // automatically bring up the calendar
+  dateInput.trigger("focus");
+});
